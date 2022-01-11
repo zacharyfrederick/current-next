@@ -8,9 +8,13 @@ import (
 	"strconv"
 	"github.com/jubnzv/go-taskwarrior"
 	"github.com/zacharyfrederick/current-next"
+	"flag"
 )
 
 func main() {
+	setPtr := flag.Bool("s", false, "whether to set the current task to the supplied task_id")
+	flag.Parse()
+
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println("Your home directory is not set")
