@@ -7,8 +7,16 @@ import (
 	"path/filepath"
 	"strconv"
 	"github.com/jubnzv/go-taskwarrior"
-	"github.com/zacharyfrederick/current-next"
 )
+
+func get_task_with_id(t *taskwarrior.TaskWarrior, id int32) (*taskwarrior.Task, error) {
+	for _, task := range t.Tasks {
+		if task.Id == id {
+			return &task, nil
+		}
+	}
+	return nil, fmt.Errorf("A task with that id could not be found")
+}
 
 func main() {
 	homedir, err := os.UserHomeDir()
@@ -17,9 +25,9 @@ func main() {
 		os.Exit(3)
 	}
 	
-	data_path := filepath.Join(homedir, ".current-next", "current.data")
+	data_path := filepath.Join(homedir, ".current-next", "next.data")
 	if _, err := os.Stat(data_path); os.IsNotExist(err) {
-		fmt.Println("The current task has not been set") 
+		fmt.Println("The next task has not been set") 
 		os.Exit(3)
 	}
 
@@ -31,7 +39,7 @@ func main() {
 
 	temp := strings.Replace(string(data), "\n", "", -1)
 	if temp == "" {
-		fmt.Println("No current task set")
+		fmt.Println("No next task set")
 		os.Exit(0)
 	}
 	task_id, err := strconv.Atoi(temp)
@@ -44,7 +52,7 @@ func main() {
 	tw.FetchAllTasks()
 
 	
-	task, err := current_next.GetTaskWithId(tw, int32(task_id))
+	task, err := get_task_with_id(tw, int32(task_id))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(3)
